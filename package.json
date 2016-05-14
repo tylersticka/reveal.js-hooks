@@ -1,0 +1,23 @@
+{
+  "name": "reveal.js-hooks",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack": "./node_modules/.bin/webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tylersticka/reveal.js-hooks.git"
+  },
+  "author": "Tyler Sticka",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tylersticka/reveal.js-hooks/issues"
+  },
+  "homepage": "https://github.com/tylersticka/reveal.js-hooks#readme",
+  "devDependencies": {
+    "webpack": "^1.13.0"
+  }
+}
