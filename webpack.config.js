@@ -24,5 +24,9 @@ module.exports = {
       include: /\.min\.js$/,
       minimize: true
     })
-  ]
+  ],
+  devServer: {
+    contentBase: './test',
+    publicPath: '/dist/'
+  }
 };
