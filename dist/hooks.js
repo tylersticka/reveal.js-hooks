@@ -54,6 +54,8 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	/**
 	 * Dependencies
 	 */
@@ -65,7 +67,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Classes
 	 */
 
-	var Action = __webpack_require__(3);
+	var Hook = __webpack_require__(3);
 
 	/**
 	 * Constants
@@ -83,21 +85,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Internal functions
 	 */
 
-	function getElementHook (element) {
-	  
-	}
+	function getElementHook(element) {}
 
-	function getElementOptions (element) {
-	  
-	}
+	function getElementOptions(element) {}
 
-	function triggerElementHook (element, eventNames, event) {
+	function triggerElementHook(element, eventNames, event) {
 	  console.log(eventNames);
 	}
 
-	function addHook (name, eventNames, action, options) {
-	  
-	}
+	function addHook(name, eventNames, action, options) {}
 
 	/**
 	 * Event listeners
@@ -8940,10 +8936,12 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	var R = __webpack_require__(2);
 	var Action = __webpack_require__(4);
 
-	function Hook (name) {
+	function Hook(name) {
 	  this.name = name;
 	  this.actions = [];
 	}
@@ -8958,19 +8956,21 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	var R = __webpack_require__(2);
 	var noop = __webpack_require__(5);
 	var splitSpaces = __webpack_require__(6);
 
-	function Action (events, callback, options) {
+	function Action(events, callback, options) {
 	  events = splitSpaces(events);
 	  callback = callback || noop;
 	  options = options || {};
-	  
+
 	  if (options.context) {
 	    callback = R.bind(callback, options.context);
 	  }
-	  
+
 	  this.events = events;
 	  this.callback = callback;
 	  this.options = options;
@@ -8991,6 +8991,8 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	var R = __webpack_require__(2);
 
 	module.exports = R.always(undefined);
@@ -8999,25 +9001,22 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	var R = __webpack_require__(2);
 	var squashSpaces = __webpack_require__(7);
 
-	module.exports = R.ifElse(
-	  R.isArrayLike(),
-	  R.identity(),
-	  R.pipe(squashSpaces, R.split(' '))
-	);
+	module.exports = R.ifElse(R.isArrayLike(), R.identity(), R.pipe(squashSpaces, R.split(' ')));
 
 /***/ },
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
 	var R = __webpack_require__(2);
 
-	module.exports = R.pipe(
-	  R.replace(/\s{2,}/g, ' '),
-	  R.trim()
-	);
+	module.exports = R.pipe(R.replace(/\s{2,}/g, ' '), R.trim());
 
 /***/ }
 /******/ ])

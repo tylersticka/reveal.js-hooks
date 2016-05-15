@@ -2,26 +2,21 @@
  * Dependencies
  */
 
-var Reveal = require('reveal.js');
-var R = require('ramda');
-
-/**
- * Classes
- */
-
-var Hook = require('./lib/hook.js');
+import Reveal from 'reveal.js';
+import R from 'ramda';
+import Hook from './lib/hook.js';
 
 /**
  * Constants
  */
 
-var DEFAULTS = {
+const DEFAULTS = {
   hookAttr: 'data-hook',
   optionsAttr: 'data-hook-options'
 };
-var OPTIONS = R.merge(DEFAULTS, Reveal.getConfig().hooks);
-var STORE = {};
-var LISTENERS = {};
+const OPTIONS = R.merge(DEFAULTS, Reveal.getConfig().hooks);
+const STORE = {};
+const LISTENERS = {};
 
 /**
  * Internal functions
@@ -36,7 +31,7 @@ function getElementOptions (element) {
 }
 
 function triggerElementHook (element, eventNames, event) {
-  console.log(eventNames);
+  // console.log(eventNames);
 }
 
 function addHook (name, eventNames, action, options) {
@@ -47,20 +42,20 @@ function addHook (name, eventNames, action, options) {
  * Event listeners
  */
 
-Reveal.addEventListener('slidechanged', function (event) {
+Reveal.addEventListener('slidechanged', event => {
   triggerElementHook(event.currentSlide, ['slidechanged', 'slideshown'], event);
   triggerElementHook(event.previousSlide, ['slidechanged', 'slidehidden'], event);
 });
 
-Reveal.addEventListener('ready', function (event) {
+Reveal.addEventListener('ready', event => {
   triggerElementHook(event.currentSlide, ['ready'], event);
 });
 
-Reveal.addEventListener('fragmentshown', function (event) {
+Reveal.addEventListener('fragmentshown', event => {
   triggerElementHook(event.fragment, ['fragmentshown'], event);
 });
 
-Reveal.addEventListener('fragmenthidden', function (event) {
+Reveal.addEventListener('fragmenthidden', event => {
   triggerElementHooks(event.fragment, ['fragmenthidden'], event);
 });
 
@@ -68,18 +63,4 @@ Reveal.addEventListener('fragmenthidden', function (event) {
  * Assemble and export plugin
  */
 
-module.exports = {};
-
-// function HookAction (events, action) {
-//   if (R.is(String, events)) {
-//     events = events.replace(/\s{2,}/g, ' ');
-//     events = events.trim();
-//     events = events.split(' ');
-//   }
-//   this.events = events || [];
-//   this.action = action || noop;
-// }
-
-// HookAction.prototype.toString = function () {
-//   return this.events.join(' ');
-// };
+export default {};

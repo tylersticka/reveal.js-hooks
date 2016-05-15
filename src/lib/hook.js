@@ -1,13 +1,15 @@
-var R = require('ramda');
-var Action = require('./action.js');
+import R from 'ramda';
+import Action from './action.js';
 
-function Hook (name) {
-  this.name = name;
-  this.actions = [];
+class Hook {
+  constructor (name) {
+    this.name = name;
+    this.actions = [];
+  }
+  
+  add (events, callback, options) {
+    this.actions.push(new Action(events, callback, options));
+  }
 }
 
-Hook.prototype.add = function (events, callback, options) {
-  this.actions.push(new Action(events, callback, options));
-};
-
-module.exports = Hook;
+export default Hook;

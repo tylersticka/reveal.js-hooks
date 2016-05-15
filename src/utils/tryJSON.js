@@ -1,6 +1,6 @@
-var R = require('ramda');
+import R from 'ramda';
 
-module.exports = R.tryCatch(function (str) {
+export default R.tryCatch(function (str) {
   str = R.replace(/(\r\n|\n|\r|\t)/gm, '', str);
   return JSON.parse(str);
 }, R.F);

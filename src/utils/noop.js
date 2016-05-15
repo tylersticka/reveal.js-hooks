@@ -1,3 +1,3 @@
-var R = require('ramda');
+import R from 'ramda';
 
-module.exports = R.always(undefined);
+export default R.always(undefined);
