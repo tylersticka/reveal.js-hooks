@@ -1,6 +1,6 @@
-import R from 'ramda';
+const R = require('ramda');
 
-export default R.pipe(
+module.exports = R.pipe(
   R.replace(/\s{2,}/g, ' '),
   R.trim()
 );

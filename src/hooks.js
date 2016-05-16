@@ -2,10 +2,10 @@
  * Dependencies
  */
 
-import Reveal from 'reveal.js';
-import R from 'ramda';
-import Hook from './lib/hook.js';
-import tryJSON from './utils/tryJSON.js';
+const Reveal = require('reveal.js');
+const R = require('ramda');
+const Hook = require('./lib/hook.js');
+const tryJSON = require('./utils/tryJSON.js');
 
 /**
  * Constants
@@ -116,7 +116,7 @@ Reveal.addEventListener('fragmenthidden', event => {
  * Plugin
  */
 
-export default {
+module.exports = {
   add: add,
   addEach: addEach,
   map: map

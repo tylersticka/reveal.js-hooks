@@ -1,3 +1,3 @@
-import R from 'ramda';
+const R = require('ramda');
 
-export default R.always(undefined);
+module.exports = R.always(undefined);

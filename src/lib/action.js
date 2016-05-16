@@ -1,8 +1,8 @@
-import R from 'ramda';
-import noop from '../utils/noop.js';
-import splitSpaces from '../utils/splitSpaces.js';
+const R = require('ramda');
+const noop = require('../utils/noop.js');
+const splitSpaces = require('../utils/splitSpaces.js');
 
-export default class Action {
+class Action {
   constructor (events, callback = noop, options = {}) {
     events = splitSpaces(events);
     
@@ -24,3 +24,5 @@ export default class Action {
     return R.apply(this.callback, this.options.args || arguments);
   }
 }
+
+module.exports = Action;

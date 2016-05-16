@@ -1,7 +1,7 @@
-import R from 'ramda';
-import squashSpaces from './squashSpaces.js';
+const R = require('ramda');
+const squashSpaces = require('./squashSpaces.js');
 
-export default R.ifElse(
+module.exports = R.ifElse(
   R.isArrayLike(),
   R.identity(),
   R.pipe(squashSpaces, R.split(' '))

@@ -62,12 +62,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var Reveal = __webpack_require__(1);
 	var R = __webpack_require__(2);
-
-	/**
-	 * Classes
-	 */
-
 	var Hook = __webpack_require__(3);
+	var tryJSON = __webpack_require__(8);
 
 	/**
 	 * Constants
@@ -79,62 +75,126 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	var OPTIONS = R.merge(DEFAULTS, Reveal.getConfig().hooks);
 	var STORE = {};
-	var LISTENERS = {};
 
 	/**
 	 * Internal functions
 	 */
 
-	function getElementHook(element) {}
+	function getElementHook(element) {
+	  var hook;
+	  var name;
 
-	function getElementOptions(element) {}
+	  if (!R.isNil(element)) {
+	    name = element.getAttribute(OPTIONS.hookAttr);
 
-	function triggerElementHook(element, eventNames, event) {
-	  console.log(eventNames);
+	    if (!R.isNil(name) && R.has(name, STORE)) {
+	      hook = STORE[name];
+	    }
+	  }
+
+	  return hook;
 	}
 
-	function addHook(name, eventNames, action, options) {}
+	function getElementOptions(element) {
+	  var options;
+
+	  if (!R.isNil(element)) {
+	    options = element.getAttribute(OPTIONS.optionsAttr);
+	    options = tryJSON(options);
+	  }
+
+	  return options;
+	}
+
+	function triggerAction(element, events, event) {
+	  var hook = getElementHook(element);
+	  var action;
+	  var options;
+
+	  if (R.isNil(hook)) {
+	    return;
+	  }
+
+	  action = hook.find(events);
+
+	  if (R.isNil(action)) {
+	    return;
+	  }
+
+	  options = getElementOptions(element);
+
+	  action.trigger(element, event, options);
+	}
+
+	/**
+	 * Public functions
+	 */
+
+	function add(name, events, callback, options) {
+	  var hook = STORE[name] || new Hook(name);
+	  hook.add(events, callback, options);
+	  STORE[name] = hook;
+	}
+
+	function addEach(name, hooks, options) {
+	  options = R.merge({ context: hooks }, options);
+	  R.forEach(function (event) {
+	    return add(name, event, hooks[event], options);
+	  }, R.keys(hooks));
+	}
+
+	function map(maps) {
+	  return function (name, hooks, options) {
+	    options = R.merge({ context: hooks }, options);
+	    hooks = R.map(function (mapTo) {
+	      return hooks[mapTo];
+	    }, maps);
+	    addEach(name, hooks, options);
+	  };
+	}
 
 	/**
 	 * Event listeners
 	 */
 
 	Reveal.addEventListener('slidechanged', function (event) {
-	  triggerElementHook(event.currentSlide, ['slidechanged', 'slideshown'], event);
-	  triggerElementHook(event.previousSlide, ['slidechanged', 'slidehidden'], event);
+	  triggerAction(event.currentSlide, ['slidechanged', 'slideshown'], event);
+	  triggerAction(event.previousSlide, ['slidechanged', 'slidehidden'], event);
 	});
 
 	Reveal.addEventListener('ready', function (event) {
-	  triggerElementHook(event.currentSlide, ['ready'], event);
+	  triggerAction(event.currentSlide, ['ready'], event);
 	});
 
 	Reveal.addEventListener('fragmentshown', function (event) {
-	  triggerElementHook(event.fragment, ['fragmentshown'], event);
+	  triggerAction(event.fragment, ['fragmentshown'], event);
 	});
 
 	Reveal.addEventListener('fragmenthidden', function (event) {
-	  triggerElementHooks(event.fragment, ['fragmenthidden'], event);
+	  triggerActions(event.fragment, ['fragmenthidden'], event);
 	});
 
 	/**
-	 * Assemble and export plugin
+	 * Plugin
 	 */
 
-	module.exports = {};
+	module.exports = {
+	  add: add,
+	  addEach: addEach,
+	  map: map
+	};
 
-	// function HookAction (events, action) {
-	//   if (R.is(String, events)) {
-	//     events = events.replace(/\s{2,}/g, ' ');
-	//     events = events.trim();
-	//     events = events.split(' ');
+	// map({
+	//   'ready slideshown': 'restart',
+	//   'slidehidden': 'kill'
+	// })('helloWorld', {
+	//   'restart': function () {
+	//     console.log('restart');
+	//   },
+	//   'kill': function () {
+	//     console.log('kill');
 	//   }
-	//   this.events = events || [];
-	//   this.action = action || noop;
-	// }
-
-	// HookAction.prototype.toString = function () {
-	//   return this.events.join(' ');
-	// };
+	// });
 
 /***/ },
 /* 1 */
@@ -8938,17 +8998,37 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 	var R = __webpack_require__(2);
 	var Action = __webpack_require__(4);
 
-	function Hook(name) {
-	  this.name = name;
-	  this.actions = [];
-	}
+	var Hook = function () {
+	  function Hook(name) {
+	    _classCallCheck(this, Hook);
 
-	Hook.prototype.add = function (events, callback, options) {
-	  this.actions.push(new Action(events, callback, options));
-	};
+	    this.name = name;
+	    this.actions = [];
+	  }
+
+	  _createClass(Hook, [{
+	    key: 'add',
+	    value: function add(events, callback, options) {
+	      this.actions.push(new Action(events, callback, options));
+	    }
+	  }, {
+	    key: 'find',
+	    value: function find(events) {
+	      return R.find(function (action) {
+	        return action.is(events);
+	      }, this.actions);
+	    }
+	  }]);
+
+	  return Hook;
+	}();
 
 	module.exports = Hook;
 
@@ -8958,32 +9038,47 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 	var R = __webpack_require__(2);
 	var noop = __webpack_require__(5);
 	var splitSpaces = __webpack_require__(6);
 
-	function Action(events, callback, options) {
-	  events = splitSpaces(events);
-	  callback = callback || noop;
-	  options = options || {};
+	var Action = function () {
+	  function Action(events) {
+	    var callback = arguments.length <= 1 || arguments[1] === undefined ? noop : arguments[1];
+	    var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-	  if (options.context) {
-	    callback = R.bind(callback, options.context);
+	    _classCallCheck(this, Action);
+
+	    events = splitSpaces(events);
+
+	    if (options.context) {
+	      callback = R.bind(callback, options.context);
+	    }
+
+	    this.events = events;
+	    this.callback = callback;
+	    this.options = options;
 	  }
 
-	  this.events = events;
-	  this.callback = callback;
-	  this.options = options;
-	}
+	  _createClass(Action, [{
+	    key: 'is',
+	    value: function is(events) {
+	      events = splitSpaces(events);
+	      return R.lt(R.length(R.without(events, this.events)), this.events.length);
+	    }
+	  }, {
+	    key: 'trigger',
+	    value: function trigger() {
+	      return R.apply(this.callback, this.options.args || arguments);
+	    }
+	  }]);
 
-	Action.prototype.is = function (events) {
-	  events = splitSpaces(events);
-	  return R.lt(R.length(R.without(events, this.events)), this.events.length);
-	};
-
-	Action.prototype.trigger = function () {
-	  return R.apply(this.callback, this.options.args || arguments);
-	};
+	  return Action;
+	}();
 
 	module.exports = Action;
 
@@ -9017,6 +9112,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	var R = __webpack_require__(2);
 
 	module.exports = R.pipe(R.replace(/\s{2,}/g, ' '), R.trim());
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var R = __webpack_require__(2);
+
+	module.exports = R.tryCatch(function (str) {
+	  str = R.replace(/(\r\n|\n|\r|\t)/gm, '', str);
+	  return JSON.parse(str);
+	}, R.F);
 
 /***/ }
 /******/ ])

@@ -1,7 +1,7 @@
-import R from 'ramda';
-import Action from './action.js';
+const R = require('ramda');
+const Action = require('./action.js');
 
-export default class Hook {
+class Hook {
   constructor (name) {
     this.name = name;
     this.actions = [];
@@ -15,3 +15,5 @@ export default class Hook {
     return R.find(action => action.is(events), this.actions);
   }
 }
+
+module.exports = Hook;
