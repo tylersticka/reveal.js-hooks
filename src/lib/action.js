@@ -2,7 +2,7 @@ import R from 'ramda';
 import noop from '../utils/noop.js';
 import splitSpaces from '../utils/splitSpaces.js';
 
-export class Action {
+export default class Action {
   constructor (events, callback = noop, options = {}) {
     events = splitSpaces(events);
     

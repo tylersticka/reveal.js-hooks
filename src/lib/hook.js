@@ -1,7 +1,7 @@
 import R from 'ramda';
 import Action from './action.js';
 
-class Hook {
+export default class Hook {
   constructor (name) {
     this.name = name;
     this.actions = [];
@@ -10,6 +10,8 @@ class Hook {
   add (events, callback, options) {
     this.actions.push(new Action(events, callback, options));
   }
+  
+  find (events) {
+    return R.find(action => action.is(events), this.actions);
+  }
 }
-
-export default Hook;

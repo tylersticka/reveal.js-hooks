@@ -5,6 +5,7 @@
 import Reveal from 'reveal.js';
 import R from 'ramda';
 import Hook from './lib/hook.js';
+import tryJSON from './utils/tryJSON.js';
 
 /**
  * Constants
@@ -23,19 +24,55 @@ const LISTENERS = {};
  */
 
 function getElementHook (element) {
+  var hook;
+  var name;
   
+  if (!R.isNil(element)) {
+    name = element.getAttribute(OPTIONS.hookAttr);
+    
+    if (!R.isNil(name) && R.has(name, STORE)) {
+      hook = STORE[name];
+    }
+  }
+  
+  return hook;
 }
 
 function getElementOptions (element) {
+  var options;
   
+  if (!R.isNil(element)) {
+    options = element.getAttribute(OPTIONS.optionsAttr);
+    options = tryJSON(options);
+  }
+  
+  return options;
 }
 
-function triggerElementHook (element, eventNames, event) {
-  // console.log(eventNames);
+function triggerAction (element, eventNames, event) {
+  var hook = getElementHook(element);
+  var action;
+  var options;
+  
+  if (R.isNil(hook)) {
+    return;
+  }
+  
+  action = hook.find(eventNames);
+  
+  if (R.isNil(action)) {
+    return;
+  }
+  
+  options = getElementOptions(element);
+  
+  action.trigger(element, event, options);
 }
 
-function addHook (name, eventNames, action, options) {
-  
+function addHook (name, eventNames, callback, options) {
+  const hook = STORE[name] || new Hook(name);
+  hook.add(eventNames, callback, options);
+  STORE[name] = hook;
 }
 
 /**
@@ -43,24 +80,26 @@ function addHook (name, eventNames, action, options) {
  */
 
 Reveal.addEventListener('slidechanged', event => {
-  triggerElementHook(event.currentSlide, ['slidechanged', 'slideshown'], event);
-  triggerElementHook(event.previousSlide, ['slidechanged', 'slidehidden'], event);
+  triggerAction(event.currentSlide, ['slidechanged', 'slideshown'], event);
+  triggerAction(event.previousSlide, ['slidechanged', 'slidehidden'], event);
 });
 
 Reveal.addEventListener('ready', event => {
-  triggerElementHook(event.currentSlide, ['ready'], event);
+  triggerAction(event.currentSlide, ['ready'], event);
 });
 
 Reveal.addEventListener('fragmentshown', event => {
-  triggerElementHook(event.fragment, ['fragmentshown'], event);
+  triggerAction(event.fragment, ['fragmentshown'], event);
 });
 
 Reveal.addEventListener('fragmenthidden', event => {
-  triggerElementHooks(event.fragment, ['fragmenthidden'], event);
+  triggerActions(event.fragment, ['fragmenthidden'], event);
 });
 
 /**
  * Assemble and export plugin
  */
+
+addHook('helloWorld', 'ready slideshown', function () { console.log('hello world'); });
 
 export default {};
