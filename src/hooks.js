@@ -17,7 +17,6 @@ const DEFAULTS = {
 };
 const OPTIONS = R.merge(DEFAULTS, Reveal.getConfig().hooks);
 const STORE = {};
-const LISTENERS = {};
 
 /**
  * Internal functions
@@ -49,7 +48,7 @@ function getElementOptions (element) {
   return options;
 }
 
-function triggerAction (element, eventNames, event) {
+function triggerAction (element, events, event) {
   var hook = getElementHook(element);
   var action;
   var options;
@@ -58,7 +57,7 @@ function triggerAction (element, eventNames, event) {
     return;
   }
   
-  action = hook.find(eventNames);
+  action = hook.find(events);
   
   if (R.isNil(action)) {
     return;
@@ -69,10 +68,16 @@ function triggerAction (element, eventNames, event) {
   action.trigger(element, event, options);
 }
 
-function addHook (name, eventNames, callback, options) {
+function addHook (name, events, callback, options) {
   const hook = STORE[name] || new Hook(name);
-  hook.add(eventNames, callback, options);
+  hook.add(events, callback, options);
   STORE[name] = hook;
+}
+
+function addHooks(name, hooks, options) {
+  options = R.merge({ context: hooks }, options);
+  
+  R.forEach(event => addHook(name, event, hooks[event], options), R.keys(hooks));
 }
 
 /**
@@ -100,6 +105,15 @@ Reveal.addEventListener('fragmenthidden', event => {
  * Assemble and export plugin
  */
 
-addHook('helloWorld', 'ready slideshown', function () { console.log('hello world'); });
+// addHook('helloWorld', 'ready slideshown', function () { console.log('hello world'); });
+
+addHooks('helloWorld', {
+  'ready slideshown': function () {
+    console.log('o hi world');
+  },
+  'slidehidden': function () {
+    console.log('buh-bye');
+  }
+});
 
 export default {};
