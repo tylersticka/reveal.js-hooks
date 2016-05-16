@@ -68,21 +68,27 @@ function triggerAction (element, events, event) {
   action.trigger(element, event, options);
 }
 
-function addHook (name, events, callback, options) {
+/**
+ * Public functions
+ */
+
+function add (name, events, callback, options) {
   const hook = STORE[name] || new Hook(name);
   hook.add(events, callback, options);
   STORE[name] = hook;
 }
 
-function addHooks (name, hooks, options) {
+function addEach (name, hooks, options) {
   options = R.merge({ context: hooks }, options);
-  R.forEach(event => addHook(name, event, hooks[event], options), R.keys(hooks));
+  R.forEach(event => add(name, event, hooks[event], options), R.keys(hooks));
 }
 
-function mapHooks (name, map, hooks, options) {
-  options = R.merge({ context: hooks }, options);
-  hooks = R.map(mapTo => hooks[mapTo], map);
-  addHooks(name, hooks, options);
+function map (maps) {
+  return (name, hooks, options) => {
+    options = R.merge({ context: hooks }, options);
+    hooks = R.map(mapTo => hooks[mapTo], maps);
+    addEach(name, hooks, options);
+  };
 }
 
 /**
@@ -107,21 +113,23 @@ Reveal.addEventListener('fragmenthidden', event => {
 });
 
 /**
- * Assemble and export plugin
+ * Plugin
  */
 
-// addHook('helloWorld', 'ready slideshown', function () { console.log('hello world'); });
+export default {
+  add: add,
+  addEach: addEach,
+  map: map
+};
 
-mapHooks('helloWorld', {
-  'ready slideshown': 'restart',
-  'slidehidden': 'kill'
-}, {
-  'restart': function () {
-    console.log('restart');
-  },
-  'kill': function () {
-    console.log('kill');
-  }
-});
-
-export default {};
+// map({
+//   'ready slideshown': 'restart',
+//   'slidehidden': 'kill'
+// })('helloWorld', {
+//   'restart': function () {
+//     console.log('restart');
+//   },
+//   'kill': function () {
+//     console.log('kill');
+//   }
+// });
