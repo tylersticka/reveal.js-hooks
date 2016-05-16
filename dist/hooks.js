@@ -171,7 +171,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 	Reveal.addEventListener('fragmenthidden', function (event) {
-	  triggerActions(event.fragment, ['fragmenthidden'], event);
+	  triggerAction(event.fragment, ['fragmenthidden'], event);
 	});
 
 	/**
@@ -183,18 +183,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  addEach: addEach,
 	  map: map
 	};
-
-	// map({
-	//   'ready slideshown': 'restart',
-	//   'slidehidden': 'kill'
-	// })('helloWorld', {
-	//   'restart': function () {
-	//     console.log('restart');
-	//   },
-	//   'kill': function () {
-	//     console.log('kill');
-	//   }
-	// });
 
 /***/ },
 /* 1 */

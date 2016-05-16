@@ -109,7 +109,7 @@ Reveal.addEventListener('fragmentshown', event => {
 });
 
 Reveal.addEventListener('fragmenthidden', event => {
-  triggerActions(event.fragment, ['fragmenthidden'], event);
+  triggerAction(event.fragment, ['fragmenthidden'], event);
 });
 
 /**
@@ -121,15 +121,3 @@ module.exports = {
   addEach: addEach,
   map: map
 };
-
-// map({
-//   'ready slideshown': 'restart',
-//   'slidehidden': 'kill'
-// })('helloWorld', {
-//   'restart': function () {
-//     console.log('restart');
-//   },
-//   'kill': function () {
-//     console.log('kill');
-//   }
-// });
