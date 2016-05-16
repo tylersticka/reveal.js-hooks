@@ -74,10 +74,15 @@ function addHook (name, events, callback, options) {
   STORE[name] = hook;
 }
 
-function addHooks(name, hooks, options) {
+function addHooks (name, hooks, options) {
   options = R.merge({ context: hooks }, options);
-  
   R.forEach(event => addHook(name, event, hooks[event], options), R.keys(hooks));
+}
+
+function mapHooks (name, map, hooks, options) {
+  options = R.merge({ context: hooks }, options);
+  hooks = R.map(mapTo => hooks[mapTo], map);
+  addHooks(name, hooks, options);
 }
 
 /**
@@ -107,12 +112,15 @@ Reveal.addEventListener('fragmenthidden', event => {
 
 // addHook('helloWorld', 'ready slideshown', function () { console.log('hello world'); });
 
-addHooks('helloWorld', {
-  'ready slideshown': function () {
-    console.log('o hi world');
+mapHooks('helloWorld', {
+  'ready slideshown': 'restart',
+  'slidehidden': 'kill'
+}, {
+  'restart': function () {
+    console.log('restart');
   },
-  'slidehidden': function () {
-    console.log('buh-bye');
+  'kill': function () {
+    console.log('kill');
   }
 });
 
