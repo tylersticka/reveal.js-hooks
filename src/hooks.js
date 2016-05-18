@@ -83,9 +83,9 @@ function addEach (name, hooks, options) {
   R.forEach(event => add(name, event, hooks[event], options), R.keys(hooks));
 }
 
-function map (maps) {
+function map (maps, mappedOptions) {
   return (name, hooks, options) => {
-    options = R.merge({ context: hooks }, options);
+    options = R.merge({ context: hooks }, mappedOptions, options);
     hooks = R.map(mapTo => hooks[mapTo], maps);
     addEach(name, hooks, options);
   };
