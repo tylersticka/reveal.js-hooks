@@ -143,9 +143,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, R.keys(hooks));
 	}
 
-	function map(maps) {
+	function map(maps, mappedOptions) {
 	  return function (name, hooks, options) {
-	    options = R.merge({ context: hooks }, options);
+	    options = R.merge({ context: hooks }, mappedOptions, options);
 	    hooks = R.map(function (mapTo) {
 	      return hooks[mapTo];
 	    }, maps);
